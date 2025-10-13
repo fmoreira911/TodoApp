@@ -1,0 +1,125 @@
+import java.io.*;
+import java.util.*;
+
+public class TodoApp {
+    private static final String FILE_PATH = "data/tasks.txt";
+    private static List<Task> tasks = new ArrayList<>();
+
+    public static void main(String[] args) {
+        loadTasks();
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        do {
+            System.out.println("\n--- To-Do App ---");
+            System.out.println("1. View Tasks");
+            System.out.println("2. Add Task");
+            System.out.println("3. Mark Task as Done");
+            System.out.println("4. Delete Task");
+            System.out.println("5. Exit");
+            System.out.print("Enter choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1 -> viewTasks();
+                case 2 -> addTask(scanner);
+                case 3 -> markTaskDone(scanner);
+                case 4 -> deleteTask(scanner);
+                case 5 -> System.out.println("Exiting...");
+                default -> System.out.println("Invalid choice. Try again.");
+            }
+        } while (choice != 5);
+
+        saveTasks();
+    }
+
+    // Task class
+    static class Task {
+        String description;
+        boolean done;
+
+        Task(String description) {
+            this.description = description;
+            this.done = false;
+        }
+
+        @Override
+        public String toString() {
+            return (done ? "[X] " : "[ ] ") + description;
+        }
+    }
+
+    // Load tasks from file
+    private static void loadTasks() {
+        File file = new File(FILE_PATH);
+        if (!file.exists()) return;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split("::");
+                Task t = new Task(parts[1]);
+                t.done = Boolean.parseBoolean(parts[0]);
+                tasks.add(t);
+            }
+        } catch (IOException e) {
+            System.out.println("Error loading tasks: " + e.getMessage());
+        }
+    }
+
+    // Save tasks to file
+    private static void saveTasks() {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(FILE_PATH))) {
+            for (Task t : tasks) {
+                pw.println(t.done + "::" + t.description);
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving tasks: " + e.getMessage());
+        }
+    }
+
+    private static void viewTasks() {
+        if (tasks.isEmpty()) {
+            System.out.println("No tasks found.");
+            return;
+        }
+        System.out.println("\nYour Tasks:");
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println((i + 1) + ". " + tasks.get(i));
+        }
+    }
+
+    private static void addTask(Scanner scanner) {
+        System.out.print("Enter task description: ");
+        String desc = scanner.nextLine();
+        tasks.add(new Task(desc));
+        System.out.println("Task added.");
+    }
+
+    private static void markTaskDone(Scanner scanner) {
+        viewTasks();
+        if (tasks.isEmpty()) return;
+        System.out.print("Enter task number to mark as done: ");
+        int index = scanner.nextInt() - 1;
+        if (index >= 0 && index < tasks.size()) {
+            tasks.get(index).done = true;
+            System.out.println("Task marked as done.");
+        } else {
+            System.out.println("Invalid task number.");
+        }
+    }
+
+    private static void deleteTask(Scanner scanner) {
+        viewTasks();
+        if (tasks.isEmpty()) return;
+        System.out.print("Enter task number to delete: ");
+        int index = scanner.nextInt() - 1;
+        if (index >= 0 && index < tasks.size()) {
+            tasks.remove(index);
+            System.out.println("Task deleted.");
+        } else {
+            System.out.println("Invalid task number.");
+        }
+    }
+}
