@@ -1,2 +1,14 @@
-# TodoApp
-A simple console-based To-Do List application built in Java. Users can add, view, mark, and delete tasks easily from the terminal. All tasks are automatically saved to a text file and reloaded on startup.
+# Todo App
+
+A Java console application for managing a to-do list.
+
+## Features
+- Add, view, mark as complete and delete tasks
+- Tasks automatically saved to a text file and reloaded on startup
+- Persistent storage means tasks survive between sessions
+
+## Technologies
+- Java
+
+## Built As
+A personal project to practise Java fundamentals including file I/O and console application development.
